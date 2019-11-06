@@ -201,6 +201,6 @@ test('eliminar la primer tarea', () => {
 
 test('editar la nueva tarea', () => {
     nuevaTarea("nueva tarea", "descripcion", false);
-    
+
     expect(editarTarea("nueva tarea", "nuevo nombre", "nueva descripcion", true)).toStrictEqual(["nuevo nombre", "nueva descripcion", true])
 });
