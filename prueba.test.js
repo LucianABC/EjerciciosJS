@@ -77,7 +77,7 @@ test ('le paso algo que no es un numero', () => {
 
 
 
-const todo = [];
+let todo = [];
 
 const nuevaTarea = (tituloTarea, descripcionTarea, tareaResuelta) => {
     let tarea = [tituloTarea,
@@ -138,51 +138,69 @@ const buscarTarea = (tarea) => {
           throw "No esta"
       }
   }
+
 const deleteTarea = (tarea) => {
     buscarTarea(tarea);
     if (indice > -1) {
         todo.splice(indice,1);   
     }
 }
-/******se me ocurria poner una variable booleana para corroborar si cambiar el titulo y/o la descripcion, pero weno ya es la hora jeje *****/
-const editarTarea = (tarea, nuevoTitulo, nuevaDesc)=> {
-    buscarTarea(tarea);
+
+const editarTarea = (tarea, nuevoTitulo, nuevaDesc, nuevoEstado)=> {
+   buscarTarea(tarea);
     if (indice > -1) {
         todo[indice][0]=nuevoTitulo;
         todo[indice][1]=nuevaDesc;
+        todo[indice][2]=nuevoEstado; 
     }
-    return todo
+    return todo[indice]
 }
 
 
-
+beforeEach(() => {
+    todo=[];
+  })
 test('crear nueva tarea sin hacer y pushear', () => {                      
     expect(nuevaTarea("nueva tarea", "descripcion", false)[0][0]).toContain("nueva tarea");
 });
 
 test('crear nueva tarea hecha y pushear', () => {                      
-    expect(nuevaTarea("nueva tarea2", "descripcion2", true)[1][0]).toContain("nueva tarea2");
+    expect(nuevaTarea("nueva tarea2", "descripcion2", true)[0][0]).toContain("nueva tarea2");
 });
 
+  
 test('filtrar tareas no hechas', () => {
+    nuevaTarea("nueva tarea", "descripcion", false);
+    nuevaTarea("nueva tarea2", "descripcion2", true)
+    
     const result= filtrarNoResueltas()[0][2];
     expect(result).toBe(false);
 });
 
 test('buscar la primer tarea', () => {
+    nuevaTarea("nueva tarea", "descripcion", false);
+    nuevaTarea("nueva tarea2", "descripcion2", true)
+
     expect(buscarTarea("nueva tarea")).toBe(todo[0]);
 });
 
 test('buscar la segunda tarea', () => {
+    nuevaTarea("nueva tarea", "descripcion", false);
+    nuevaTarea("nueva tarea2", "descripcion2", true)
+
     expect(buscarTarea("nueva tarea2")).toBe(todo[1]);
 });
 
 test('eliminar la primer tarea', () => {
+    nuevaTarea("nueva tarea", "descripcion", false);
+    nuevaTarea("nueva tarea2", "descripcion2", true)
     previousLength=todo.length;
     deleteTarea("nueva tarea");
     expect(todo.length).toBeLessThan(previousLength);
 });
 
-test('editar la nueva tarea2', () => {
-
+test('editar la nueva tarea', () => {
+    nuevaTarea("nueva tarea", "descripcion", false);
+    
+    expect(editarTarea("nueva tarea", "nuevo nombre", "nueva descripcion", true)).toStrictEqual(["nuevo nombre", "nueva descripcion", true])
 });
