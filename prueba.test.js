@@ -92,52 +92,47 @@ const agregarTarea = (tarea) => {
     todo.push(tarea);
 }
 
+const verTareas = (separar = undefined) => {
+    let done=undefined;
+    let notDone=undefined;
 
-const verTareas = (todo) => {
-    return todo;
-}
+    if (separar == true) {   
+        done = todo.filter((tareaHecha) =>{
+            return tareaHecha[2] == true;
+        });
+        return done
 
+    } else if (separar == false) {
+        notDone = todo.filter((tareaNoHecha)=>{
+            return tareaNoHecha[2] == false;
+        });
 
-const filtrarResueltas= () => {   
-    let resueltas = [];
-    for (let i=0;i<todo.length; i++) {
-        if (todo[i][2]==true) {
-           resueltas.push(todo[i]); 
-        } 
+        return notDone
+
+    } else {
+        return todo
     }
-    return resueltas;
 }
 
-const filtrarNoResueltas = () => {
-    let noResueltas = [];
-    for (let i=0;i<todo.length; i++) {
-
-        if (todo[i][2]==false) {
-            noResueltas.push(todo[i]);
-        }
-    }
-    return noResueltas;
-}
 
 const buscarTarea = (tarea) => {
     let esta=false;
     indice=-1;
     
-      for (let i =0; i<todo.length; i++){
-          let found = todo[i].find(element => {
-              return element == tarea;
-          });
-          if (found) {
-              esta=true;
-              indice=i;
-              return todo[indice];
-          }
-      } 
-
-      if (esta==false){
+    for (let i =0; i<todo.length; i++){ /** se puede hacer con findIndex */
+        let found = todo[i].find(element => {
+            return element == tarea;
+        });
+        if (found) {
+            esta=true;
+            indice=i;
+            return todo[indice];
+        }
+    } 
+    if (esta==false){
           throw "No esta"
-      }
-  }
+    }
+}
 
 const deleteTarea = (tarea) => {
     buscarTarea(tarea);
@@ -157,50 +152,74 @@ const editarTarea = (tarea, nuevoTitulo, nuevaDesc, nuevoEstado)=> {
 }
 
 
+
 beforeEach(() => {
     todo=[];
-  })
+});
+
 test('crear nueva tarea sin hacer y pushear', () => {                      
     expect(nuevaTarea("nueva tarea", "descripcion", false)[0][0]).toContain("nueva tarea");
 });
+
 
 test('crear nueva tarea hecha y pushear', () => {                      
     expect(nuevaTarea("nueva tarea2", "descripcion2", true)[0][0]).toContain("nueva tarea2");
 });
 
-  
-test('filtrar tareas no hechas', () => {
-    nuevaTarea("nueva tarea", "descripcion", false);
-    nuevaTarea("nueva tarea2", "descripcion2", true)
-    
-    const result= filtrarNoResueltas()[0][2];
-    expect(result).toBe(false);
-});
-
 test('buscar la primer tarea', () => {
     nuevaTarea("nueva tarea", "descripcion", false);
-    nuevaTarea("nueva tarea2", "descripcion2", true)
+    nuevaTarea("nueva tarea2", "descripcion2", true);
 
     expect(buscarTarea("nueva tarea")).toBe(todo[0]);
 });
 
+
 test('buscar la segunda tarea', () => {
     nuevaTarea("nueva tarea", "descripcion", false);
-    nuevaTarea("nueva tarea2", "descripcion2", true)
+    nuevaTarea("nueva tarea2", "descripcion2", true);
 
     expect(buscarTarea("nueva tarea2")).toBe(todo[1]);
 });
 
+
 test('eliminar la primer tarea', () => {
     nuevaTarea("nueva tarea", "descripcion", false);
-    nuevaTarea("nueva tarea2", "descripcion2", true)
+    nuevaTarea("nueva tarea2", "descripcion2", true);
+
     previousLength=todo.length;
     deleteTarea("nueva tarea");
     expect(todo.length).toBeLessThan(previousLength);
 });
 
+
 test('editar la nueva tarea', () => {
     nuevaTarea("nueva tarea", "descripcion", false);
 
-    expect(editarTarea("nueva tarea", "nuevo nombre", "nueva descripcion", true)).toStrictEqual(["nuevo nombre", "nueva descripcion", true])
+    expect(editarTarea("nueva tarea", "nuevo nombre", "nueva descripcion", true)).toStrictEqual(["nuevo nombre", "nueva descripcion", true]);
+});
+
+
+test('ver tareas separadas por hechas',() => {
+    
+    nuevaTarea("nueva tarea", "descripcion", false);
+    nuevaTarea("nueva tarea2", "descripcion2", true);
+
+    expect(verTareas(true)).toContainEqual(["nueva tarea2", "descripcion2", true])
+});
+
+
+test('ver tareas separadas por no hechas',() => {
+    
+    nuevaTarea("nueva tarea", "descripcion", false);
+    nuevaTarea("nueva tarea2", "descripcion2", true);
+
+    expect(verTareas(false)).toContainEqual(["nueva tarea", "descripcion", false])
+});
+
+
+test('ver todas las tareas',() => {
+    nuevaTarea("nueva tarea", "descripcion", false);
+    nuevaTarea("nueva tarea2", "descripcion2", true);
+
+    expect(verTareas(undefined)).toBe(todo)
 });
